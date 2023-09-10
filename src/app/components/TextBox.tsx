@@ -6,6 +6,7 @@ import { getRes } from '../api/chatgpt';
 const TextBox = () => {
   const [audioText, setAudioText] = useState("");
   const [hearing, setHearing] = useState(false);
+  const [aiThinking, setAiThinking] = useState(false);
   const [aiText, setAiText] = useState("");
 
   const recOn = () => {
@@ -26,7 +27,9 @@ const TextBox = () => {
     rec.onresult = async (e: any) => {
       setAudioText(e.results[0][0].transcript);
       rec.stop();
+      setAiThinking(true)
       const data = await getRes(e.results[0][0].transcript);
+      setAiThinking(false)
       setAiText(data.choices[0].message.content);
     }
     rec.onend = () => { setHearing(false) }
@@ -48,13 +51,15 @@ const TextBox = () => {
           <p>上のボタンから会話を始めましょう！</p>
         )
       }
-      {
-        aiText ? (
-          <p>AI:「{aiText}」</p>
-        ) : (
-          <p>AI:「何かお手伝いできることはありますか？」</p>
-        )
-      }
+    {
+      aiText ? (
+        <p>AI:「{aiText}」</p>
+      ) : aiThinking ? (
+        <p>AI:「...」</p>
+      ) : (
+        <p>AI:「何かお手伝いできることはありますか？」</p>
+      )
+    }
     </div>
   )
 }
