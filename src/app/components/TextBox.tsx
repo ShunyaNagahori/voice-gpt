@@ -1,10 +1,12 @@
 'use client'
 import React, { useState } from 'react'
+import { getRes } from '../api/chatgpt';
 
 
 const TextBox = () => {
   const [audioText, setAudioText] = useState("");
   const [hearing, setHearing] = useState(false);
+  const [aiText, setAiText] = useState("");
 
   const recOn = () => {
     const SpeechRecognition =
@@ -21,9 +23,11 @@ const TextBox = () => {
     // rec.onspeechstart = () => { console.log('on speech start') }
     // rec.onspeechend = () => { console.log('on speech end') }
     // rec.onaudioend = () => { console.log('on audio end') }
-    rec.onresult = (e: any) => {
+    rec.onresult = async (e: any) => {
       setAudioText(e.results[0][0].transcript);
       rec.stop();
+      const data = await getRes(e.results[0][0].transcript);
+      setAiText(data.choices[0].message.content);
     }
     rec.onend = () => { setHearing(false) }
   }
@@ -37,7 +41,20 @@ const TextBox = () => {
           <button onClick={recOn}>start</button>
         )
       }
-      <p>{audioText}</p>
+      {
+        audioText ? (
+          <p>自分:「{audioText}」</p>
+        ) : (
+          <p>上のボタンから会話を始めましょう！</p>
+        )
+      }
+      {
+        aiText ? (
+          <p>AI:「{aiText}」</p>
+        ) : (
+          <p>AI:「何かお手伝いできることはありますか？」</p>
+        )
+      }
     </div>
   )
 }
