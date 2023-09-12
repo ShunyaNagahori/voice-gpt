@@ -1,4 +1,5 @@
-export const getRes = async (text: String) => {
+// 過去の会話は記憶していない
+export const getRes = async (text: string) => {
   const res = await fetch(process.env.NEXT_PUBLIC_URL!, {
     method: "POST",
     headers: {
